@@ -12,6 +12,9 @@ Add `paper-rename.py` to your path. Then run:
 paper-rename.py paper.pdf
 ```
 
+I wrap this in a [script](https://github.com/rejuvyesh/Scripts/blob/master/paper) to maintain my [papers](http://github.com/rejuvyesh/papers) repository.
+
+
 Known Issues
 ------------
 
