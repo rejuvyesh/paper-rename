@@ -6,7 +6,7 @@ Because downloaded papers seldom have names that a human can identify.
 Usage
 -----
 
-First download `pdftoxml` and add to your path: [linux](https://dl.dropboxusercontent.com/u/60488479/pdftoxml)
+First download `pdftoxml` and add to your path: [linux](https://dl.dropboxusercontent.com/u/60488479/pdftoxml), [MacOS](https://copy.com/6K03EC93XTxirs4l).
 
 Next add `paper-rename.py` to your path. Then run:
 
