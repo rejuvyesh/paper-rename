@@ -8,6 +8,7 @@
 
 from lxml import etree
 from pdftree import parsepdf
+import exiftool
 import sys
 import re
 import os
@@ -53,13 +54,32 @@ def get_author(tree):
   a = etree.tostring(author_node, method='text', encoding="UTF-8").decode('utf8').lower()
   return a
 
+
+def exifdata(pdfpath):
+  ''' Get data using exiftool
+  Arguments:
+  - `pdfpath`:
+  '''
+  with exiftool.ExifTool() as et:
+    title = et.get_tag('Title', pdfpath).replace(' ', '_')
+    author = et.get_tag('Author', pdfpath).replace(',', '_')
+  return title, author
+
+
 def rename(pdfpath):
   '''
   Rename
   '''
-  tree = parsepdf(pdfpath)
-  title = get_title(tree)
-  author = get_author(tree).replace(',', '_')
+  title = None
+  author = None
+  try:
+    title, author = exifdata(pdfpath)
+  except:
+    tree = parsepdf(pdfpath)
+  if not title:
+    title = get_title(tree)
+  if not author:
+    author = get_author(tree).replace(',', '_')
   newname = author[:20] + '-' + title + '.pdf'
   newname = re.sub('[!@#,;:\/\[\]()]', '', newname)
   newname = re.sub('-{2,}', '-', newname)
