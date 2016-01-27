@@ -10,8 +10,14 @@ First download `pdftoxml` and add to your path: [linux](https://dl.dropboxuserco
 
 Next add `paper-rename.py` to your path. Then run:
 
+### To rename a given file
 ```sh
-paper-rename.py paper.pdf
+paper-rename.py -f paper.pdf
+paper-rename.py --file paper.pdf
+```
+### To rename all the pdf files in a given folder recursively
+```sh
+paper-rename.py --dir path2folder
 ```
 
 I wrap this in a [script](https://github.com/rejuvyesh/Scripts/blob/master/paper) to maintain my [papers](http://github.com/rejuvyesh/papers) repository.

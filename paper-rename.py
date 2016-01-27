@@ -8,10 +8,12 @@
 
 from lxml import etree
 from pdftree import parsepdf
-import exiftool
 import sys
 import re
 import os
+import argparse
+import subprocess as spr
+import pdb
 
 
 def to_hyphenated(name):
@@ -54,38 +56,47 @@ def get_author(tree):
   a = etree.tostring(author_node, method='text', encoding="UTF-8").decode('utf8').lower()
   return a
 
-
-def exifdata(pdfpath):
-  ''' Get data using exiftool
-  Arguments:
-  - `pdfpath`:
-  '''
-  with exiftool.ExifTool() as et:
-    title = et.get_tag('Title', pdfpath).replace(' ', '_')
-    author = et.get_tag('Author', pdfpath).replace(',', '_')
-  return title, author
-
-
 def rename(pdfpath):
   '''
   Rename
   '''
-  title = None
-  author = None
-  try:
-    title, author = exifdata(pdfpath)
-  except:
-    tree = parsepdf(pdfpath)
-  if not title:
-    title = get_title(tree)
-  if not author:
-    author = get_author(tree).replace(',', '_')
+  currentPath = os.getcwd()
+  # Parse the file name out of the path
+  pdfname = pdfpath.split('/')[-1]
+
+  # change directory to the location of the pdf
+  os.chdir(pdfpath[0:-(len(pdfname)+1)])
+
+  tree = parsepdf(pdfname)
+  #pdb.set_trace()
+  title = get_title(tree)
+  author = get_author(tree).replace(',', '_')
   newname = author[:20] + '-' + title + '.pdf'
   newname = re.sub('[!@#,;:\/\[\]()]', '', newname)
   newname = re.sub('-{2,}', '-', newname)
   newpath = os.path.join(os.path.dirname(pdfpath), newname)
-  os.rename(pdfpath, newpath)
+  os.rename(pdfname, newname)
+
+  # change back to the original path
+  os.chdir(currentPath)
   print(newpath)
 
 if __name__ == '__main__':
-  rename(sys.argv[1])
+  parser = argparse.ArgumentParser()
+  parser.add_argument("--dir", help="rename all the pdf files in this directory", nargs='?', default=None)
+  parser.add_argument("-f","--file", help="rename the file", nargs='?', default=None)
+  # maximum depth of recursion TODO
+  #  parser.add_argument("--max_depth", help="the depth of recursion", nargs='?', default=0)
+  
+  args = parser.parse_args()
+
+  if(args.file!=None):
+    rename(args.file)
+
+  if(args.dir!=None):
+    p = spr.Popen(['find', args.dir,'-name', '*.pdf'], stdout=spr.PIPE, stderr=spr.PIPE)
+    out = p.communicate()[0].decode("utf-8").split('\n')
+    for pdfpath in out[0:len(out)-1]:  # ignoring the empty string at the last position of out
+      rename(pdfpath)
+    
+      
