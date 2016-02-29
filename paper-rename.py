@@ -13,7 +13,6 @@ import re
 import os
 import argparse
 import subprocess as spr
-import pdb
 
 
 def to_hyphenated(name):
@@ -68,7 +67,7 @@ def rename(pdfpath):
   os.chdir(pdfpath[0:-(len(pdfname)+1)])
 
   tree = parsepdf(pdfname)
-  #pdb.set_trace()
+
   title = get_title(tree)
   author = get_author(tree).replace(',', '_')
   newname = author[:20] + '-' + title + '.pdf'
@@ -91,7 +90,7 @@ if __name__ == '__main__':
   args = parser.parse_args()
 
   if(args.file!=None):
-    rename(args.file)
+    rename(os.path.abspath(args.file))
 
   if(args.dir!=None):
     p = spr.Popen(['find', args.dir,'-name', '*.pdf'], stdout=spr.PIPE, stderr=spr.PIPE)
